@@ -1,122 +1,61 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useMemo } from 'react'
+import { parseMarkdownToSlides, INITIAL_DECK_MARKDOWN } from './lib/parser'
+import { Toolbar } from './components/Toolbar/Toolbar'
+import { EditorPane } from './components/Editor/EditorPane'
+import { SlideView } from './components/Slide/SlideView'
+import { PresentationMode } from './components/Presentation/PresentationMode'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [markdown, setMarkdown] = useState<string>(INITIAL_DECK_MARKDOWN)
+  const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0)
+  const [isPresenting, setIsPresenting] = useState<boolean>(false)
+
+  // Parse markdown into structured slide objects
+  const slides = useMemo(() => parseMarkdownToSlides(markdown), [markdown])
+
+  // Safeguard active slide index
+  const safeIndex = Math.min(Math.max(0, currentSlideIndex), Math.max(0, slides.length - 1))
+  const currentSlide = slides[safeIndex]
+
+  const handleNext = () => {
+    if (safeIndex < slides.length - 1) {
+      setCurrentSlideIndex(safeIndex + 1)
+    }
+  }
+
+  const handlePrev = () => {
+    if (safeIndex > 0) {
+      setCurrentSlideIndex(safeIndex - 1)
+    }
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--color-bg-canvas)] select-none">
+      {/* Top Application Toolbar */}
+      <Toolbar
+        currentSlide={safeIndex}
+        totalSlides={slides.length}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        onStartPresentation={() => setIsPresenting(true)}
+      />
 
-      <div className="ticks"></div>
+      {/* Split-View Workspace: Editor & Live Slide Preview */}
+      <main className="flex-1 flex overflow-hidden">
+        <EditorPane value={markdown} onChange={setMarkdown} />
+        <SlideView slide={currentSlide} />
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {/* Fullscreen Presentation Mode */}
+      {isPresenting && (
+        <PresentationMode
+          slides={slides}
+          currentIndex={safeIndex}
+          onClose={() => setIsPresenting(false)}
+          onNext={handleNext}
+          onPrev={handlePrev}
+        />
+      )}
+    </div>
   )
 }
-
-export default App
