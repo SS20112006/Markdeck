@@ -40,7 +40,30 @@ export default function App() {
     }
   }, [fileName])
 
-  // Global Keyboard Shortcuts (Cmd+Enter to present, ? for shortcuts modal)
+  // Parse markdown into structured slide objects
+  const slides = useMemo(() => parseMarkdownToSlides(markdown), [markdown])
+
+  // Safeguard active slide index
+  const safeIndex = Math.min(Math.max(0, currentSlideIndex), Math.max(0, slides.length - 1))
+  const currentSlide = slides[safeIndex]
+
+  const handleNext = useCallback(() => {
+    setCurrentSlideIndex((prev) => Math.min(prev + 1, slides.length - 1))
+  }, [slides.length])
+
+  const handlePrev = useCallback(() => {
+    setCurrentSlideIndex((prev) => Math.max(prev - 1, 0))
+  }, [])
+
+  const handleClosePresentation = useCallback(() => {
+    setIsPresenting(false)
+  }, [])
+
+  const handleStartPresentation = useCallback(() => {
+    setIsPresenting(true)
+  }, [])
+
+  // Global Keyboard Shortcuts (Cmd+Enter to present, ? for shortcuts modal, Arrow keys in preview)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // Cmd/Ctrl + Enter to toggle presentation
@@ -57,37 +80,30 @@ export default function App() {
         (target.tagName === 'INPUT' ||
           target.tagName === 'TEXTAREA' ||
           target.isContentEditable ||
-          target.closest('.cm-editor'))
+          Boolean(target.closest('.cm-editor')))
 
       // '?' opens shortcuts modal when not typing in editor
       if (!isInput && e.key === '?') {
         e.preventDefault()
         setIsShortcutsOpen((prev) => !prev)
+        return
+      }
+
+      // Arrow navigation in preview mode (when not presenting and not typing)
+      if (!isPresenting && !isInput) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault()
+          handleNext()
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault()
+          handlePrev()
+        }
       }
     }
 
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [])
-
-  // Parse markdown into structured slide objects
-  const slides = useMemo(() => parseMarkdownToSlides(markdown), [markdown])
-
-  // Safeguard active slide index
-  const safeIndex = Math.min(Math.max(0, currentSlideIndex), Math.max(0, slides.length - 1))
-  const currentSlide = slides[safeIndex]
-
-  const handleNext = () => {
-    if (safeIndex < slides.length - 1) {
-      setCurrentSlideIndex(safeIndex + 1)
-    }
-  }
-
-  const handlePrev = () => {
-    if (safeIndex > 0) {
-      setCurrentSlideIndex(safeIndex - 1)
-    }
-  }
+  }, [isPresenting, handleNext, handlePrev])
 
   const handleImportFile = useCallback((content: string, name: string) => {
     setMarkdown(content)
@@ -169,7 +185,7 @@ export default function App() {
           totalSlides={slides.length}
           onPrev={handlePrev}
           onNext={handleNext}
-          onStartPresentation={() => setIsPresenting(true)}
+          onStartPresentation={handleStartPresentation}
           onImportFile={handleImportFile}
           onExportFile={handleExportFile}
           onResetDemo={handleResetDemo}
@@ -187,7 +203,7 @@ export default function App() {
           <PresentationMode
             slides={slides}
             currentIndex={safeIndex}
-            onClose={() => setIsPresenting(false)}
+            onClose={handleClosePresentation}
             onNext={handleNext}
             onPrev={handlePrev}
           />
