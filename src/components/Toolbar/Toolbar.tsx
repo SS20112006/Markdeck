@@ -1,22 +1,30 @@
-import React from 'react'
-import { Play, ChevronLeft, ChevronRight, PartyPopper } from 'lucide-react'
+import React, { useRef } from 'react'
+import { Play, ChevronLeft, ChevronRight, PartyPopper, FolderOpen, Download } from 'lucide-react'
 import confetti from 'canvas-confetti'
 
 interface ToolbarProps {
+  fileName: string
   currentSlide: number
   totalSlides: number
   onPrev: () => void
   onNext: () => void
   onStartPresentation: () => void
+  onImportFile: (content: string, fileName: string) => void
+  onExportFile: () => void
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
+  fileName,
   currentSlide,
   totalSlides,
   onPrev,
   onNext,
   onStartPresentation,
+  onImportFile,
+  onExportFile,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const triggerCelebration = () => {
     confetti({
       particleCount: 80,
@@ -25,8 +33,38 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     })
   }
 
+  const handleOpenClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      if (typeof content === 'string') {
+        onImportFile(content, file.name)
+      }
+    }
+    reader.readAsText(file)
+
+    // Reset input so the same file can be selected again if needed
+    e.target.value = ''
+  }
+
   return (
     <header className="hig-regular-material h-14 px-4 flex items-center justify-between z-20 select-none">
+      {/* Hidden file input for native file picker */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".md,.markdown,text/markdown,text/plain"
+        className="hidden"
+      />
+
       {/* Brand & Document Name */}
       <div className="flex items-center space-x-3">
         <div className="w-8 h-8 rounded-lg bg-[var(--color-accent)] flex items-center justify-center text-white font-bold text-xs shadow-sm">
@@ -36,7 +74,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <h1 className="text-sm font-semibold leading-tight text-[var(--color-text-primary)]">
             Markdeck
           </h1>
-          <p className="text-[11px] text-[var(--color-text-secondary)]">Apresentação Markdown</p>
+          <p className="text-[11px] text-[var(--color-text-secondary)] truncate max-w-[180px] sm:max-w-xs" title={fileName}>
+            {fileName}
+          </p>
         </div>
       </div>
 
@@ -67,17 +107,38 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center space-x-2">
+      {/* File Operations & Action Buttons */}
+      <div className="flex items-center space-x-1 sm:space-x-2">
+        <button
+          type="button"
+          onClick={handleOpenClick}
+          aria-label="Abrir ficheiro Markdown"
+          title="Importar ficheiro .md do computador"
+          className="hig-touch-target px-3 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+        >
+          <FolderOpen className="w-4 h-4 mr-1.5 text-[var(--color-accent)]" />
+          <span className="hidden sm:inline">Abrir .md</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onExportFile}
+          aria-label="Guardar ficheiro Markdown"
+          title="Descarregar ficheiro .md atual"
+          className="hig-touch-target px-3 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+        >
+          <Download className="w-4 h-4 mr-1.5 text-[var(--color-text-secondary)]" />
+          <span className="hidden sm:inline">Guardar</span>
+        </button>
+
         <button
           type="button"
           onClick={triggerCelebration}
           aria-label="Celebrar"
           title="Celebrar com confetti"
-          className="hig-touch-target px-3 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="hig-touch-target px-2.5 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
-          <PartyPopper className="w-4 h-4 text-amber-500 mr-1.5" />
-          Celebrar
+          <PartyPopper className="w-4 h-4 text-amber-500" />
         </button>
 
         <button
