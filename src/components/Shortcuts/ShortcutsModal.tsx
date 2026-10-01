@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
-import { X, Keyboard } from 'lucide-react'
+import { X } from 'lucide-react'
+import { Logo } from '../Brand/Logo'
 
 interface ShortcutsModalProps {
   isOpen: boolean
@@ -52,14 +53,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
       >
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[var(--color-bg-material-border)]">
-          <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/15 text-[var(--color-accent)] flex items-center justify-center">
-              <Keyboard className="w-4 h-4" />
-            </div>
-            <h2 id="shortcuts-title" className="text-base font-semibold text-[var(--color-text-primary)]">
-              Atalhos de Teclado
-            </h2>
-          </div>
+          <Logo size="sm" showText={true} />
           <button
             type="button"
             onClick={onClose}

@@ -11,6 +11,7 @@ import {
   HelpCircle,
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
+import { Logo } from '../Brand/Logo'
 
 interface ToolbarProps {
   fileName: string
@@ -85,12 +86,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       {/* Brand & Document Name */}
       <div className="flex items-center space-x-3">
-        <div className="w-8 h-8 rounded-lg bg-[var(--color-accent)] flex items-center justify-center text-white font-bold text-xs shadow-sm">
-          MD
-        </div>
+        <Logo size="md" showText={false} />
         <div>
-          <h1 className="text-sm font-semibold leading-tight text-[var(--color-text-primary)]">
-            Markdeck
+          <h1 className="text-sm font-semibold leading-tight text-[var(--color-text-primary)] font-display">
+            Mark<span className="text-[var(--color-accent)]">deck</span>
           </h1>
           <p
             className="text-[11px] text-[var(--color-text-secondary)] truncate max-w-[150px] sm:max-w-xs"

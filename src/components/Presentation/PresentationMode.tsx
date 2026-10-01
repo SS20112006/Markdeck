@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import type { SlideData } from '../../types/deck'
 import { SlideView } from '../Slide/SlideView'
 import { X, ChevronLeft, ChevronRight, PartyPopper } from 'lucide-react'
+import { Logo } from '../Brand/Logo'
 import confetti from 'canvas-confetti'
 
 interface PresentationModeProps {
@@ -76,6 +77,11 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
+      {/* Subtle Brand Watermark */}
+      <div className="absolute top-5 left-6 z-10 opacity-30 hover:opacity-90 transition-opacity">
+        <Logo size="sm" showText={true} />
+      </div>
+
       {/* Slide Canvas */}
       <SlideView slide={currentSlide} isPresentationMode={true} />
 

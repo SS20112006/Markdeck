@@ -5,7 +5,7 @@ import { EditorPane } from './components/Editor/EditorPane'
 import { SlideView } from './components/Slide/SlideView'
 import { PresentationMode } from './components/Presentation/PresentationMode'
 import { ShortcutsModal } from './components/Shortcuts/ShortcutsModal'
-import { FileUp } from 'lucide-react'
+import { Logo } from './components/Brand/Logo'
 
 const STORAGE_KEY_CONTENT = 'markdeck:content'
 const STORAGE_KEY_FILENAME = 'markdeck:filename'
@@ -52,7 +52,12 @@ export default function App() {
 
       // Check if user is typing in editor or input field
       const target = e.target as HTMLElement
-      const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.closest('.cm-editor'))
+      const isInput =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable ||
+          target.closest('.cm-editor'))
 
       // '?' opens shortcuts modal when not typing in editor
       if (!isInput && e.key === '?') {
@@ -103,7 +108,11 @@ export default function App() {
   }, [markdown, fileName])
 
   const handleResetDemo = useCallback(() => {
-    if (window.confirm('Tem a certeza que deseja repor a apresentação de exemplo? As alterações não gravadas serão substituídas.')) {
+    if (
+      window.confirm(
+        'Tem a certeza que deseja repor a apresentação de exemplo? As alterações não gravadas serão substituídas.',
+      )
+    ) {
       setMarkdown(INITIAL_DECK_MARKDOWN)
       setFileName('apresentacao.md')
       setCurrentSlideIndex(0)
@@ -193,11 +202,11 @@ export default function App() {
         {/* Drag & Drop Visual Overlay */}
         {isDragging && (
           <div className="absolute inset-0 z-50 hig-regular-material bg-[var(--color-bg-material)]/90 backdrop-blur-md flex flex-col items-center justify-center pointer-events-none transition-all border-4 border-dashed border-[var(--color-accent)] m-4 rounded-3xl">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--color-accent)]/15 text-[var(--color-accent)] flex items-center justify-center mb-4">
-              <FileUp className="w-8 h-8" />
+            <div className="mb-4">
+              <Logo size="lg" showText={false} />
             </div>
-            <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-1">
-              Largar ficheiro Markdown
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-1 font-display">
+              Largar ficheiro Markdown no Markdeck
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
               Solte o ficheiro .md para carregar imediatamente a apresentação
