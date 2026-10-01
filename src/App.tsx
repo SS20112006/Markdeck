@@ -4,6 +4,7 @@ import { Toolbar } from './components/Toolbar/Toolbar'
 import { EditorPane } from './components/Editor/EditorPane'
 import { SlideView } from './components/Slide/SlideView'
 import { PresentationMode } from './components/Presentation/PresentationMode'
+import { ShortcutsModal } from './components/Shortcuts/ShortcutsModal'
 import { FileUp } from 'lucide-react'
 
 const STORAGE_KEY_CONTENT = 'markdeck:content'
@@ -19,6 +20,7 @@ export default function App() {
   })
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0)
   const [isPresenting, setIsPresenting] = useState<boolean>(false)
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false)
   const [isDragging, setIsDragging] = useState<boolean>(false)
 
   // Persist edits to localStorage
@@ -37,6 +39,31 @@ export default function App() {
       // Handle quota exceeded gracefully
     }
   }, [fileName])
+
+  // Global Keyboard Shortcuts (Cmd+Enter to present, ? for shortcuts modal)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + Enter to toggle presentation
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        setIsPresenting((prev) => !prev)
+        return
+      }
+
+      // Check if user is typing in editor or input field
+      const target = e.target as HTMLElement
+      const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.closest('.cm-editor'))
+
+      // '?' opens shortcuts modal when not typing in editor
+      if (!isInput && e.key === '?') {
+        e.preventDefault()
+        setIsShortcutsOpen((prev) => !prev)
+      }
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
 
   // Parse markdown into structured slide objects
   const slides = useMemo(() => parseMarkdownToSlides(markdown), [markdown])
@@ -137,6 +164,7 @@ export default function App() {
           onImportFile={handleImportFile}
           onExportFile={handleExportFile}
           onResetDemo={handleResetDemo}
+          onOpenShortcuts={() => setIsShortcutsOpen(true)}
         />
 
         {/* Split-View Workspace: Editor & Live Slide Preview */}
@@ -155,6 +183,12 @@ export default function App() {
             onPrev={handlePrev}
           />
         )}
+
+        {/* Keyboard Shortcuts Reference Dialog */}
+        <ShortcutsModal
+          isOpen={isShortcutsOpen}
+          onClose={() => setIsShortcutsOpen(false)}
+        />
 
         {/* Drag & Drop Visual Overlay */}
         {isDragging && (

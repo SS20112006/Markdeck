@@ -8,6 +8,7 @@ import {
   Download,
   Printer,
   RotateCcw,
+  HelpCircle,
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 
@@ -21,6 +22,7 @@ interface ToolbarProps {
   onImportFile: (content: string, fileName: string) => void
   onExportFile: () => void
   onResetDemo: () => void
+  onOpenShortcuts: () => void
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -33,6 +35,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onImportFile,
   onExportFile,
   onResetDemo,
+  onOpenShortcuts,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -172,6 +175,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
         <button
           type="button"
+          onClick={onOpenShortcuts}
+          aria-label="Atalhos de teclado"
+          title="Atalhos de teclado (?)"
+          className="hig-touch-target p-2 rounded-lg text-xs text-[var(--color-text-secondary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+        >
+          <HelpCircle className="w-4 h-4" />
+        </button>
+
+        <button
+          type="button"
           onClick={triggerCelebration}
           aria-label="Celebrar"
           title="Celebrar com confetti"
@@ -183,7 +196,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           type="button"
           onClick={onStartPresentation}
-          aria-label="Iniciar Apresentação"
+          aria-label="Iniciar Apresentação (Cmd+Enter)"
+          title="Apresentar em ecrã inteiro (Cmd+Enter)"
           className="hig-touch-target px-3.5 rounded-lg text-xs font-semibold text-white bg-[var(--color-accent)] hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
         >
           <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
