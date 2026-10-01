@@ -1,0 +1,43 @@
+1
+00:00:00,500 --> 00:00:04,500
+Stop fighting slide layout boxes in traditional presentation tools.
+
+2
+00:00:04,600 --> 00:00:08,800
+Meet Markdeck: Write Markdown, get slides instantly.
+
+3
+00:00:09,000 --> 00:00:13,500
+Real-time split-view editing with live 16:9 canvas synchronization.
+
+4
+00:00:13,800 --> 00:00:19,500
+Have an existing deck? Drag and drop any .md file directly from your Mac.
+
+5
+00:00:20,000 --> 00:00:25,000
+Press ⌘ + Enter to step into distraction-free presentation mode.
+
+6
+00:00:25,200 --> 00:00:31,000
+Fluid 60fps transitions powered by Framer Motion. Native keyboard navigation.
+
+7
+00:00:31,200 --> 00:00:36,000
+Designed with Apple Human Interface Guidelines and optical typography.
+
+8
+00:00:36,200 --> 00:00:41,500
+Interactive reactions: Press 'C' anytime to celebrate with confetti on stage.
+
+9
+00:00:41,800 --> 00:00:46,000
+Press Escape to return to the workspace.
+
+10
+00:00:46,200 --> 00:00:53,500
+Full keyboard shortcuts, speaker notes, and 1-click PDF export via ⌘ + P.
+
+11
+00:00:54,000 --> 00:01:00,000
+Markdeck — Presentations as Code. Try it live today at ss20112006.github.io/Markdeck.
