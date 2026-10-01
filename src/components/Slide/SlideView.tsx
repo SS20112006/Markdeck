@@ -29,7 +29,7 @@ export const SlideView: React.FC<SlideViewProps> = ({
       <div
         className={`relative aspect-[16/9] w-full ${
           isPresentationMode
-            ? 'max-w-6xl max-h-[85vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]'
+            ? 'max-w-5xl max-h-[78vh] m-auto shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]'
             : 'max-w-4xl shadow-2xl'
         } bg-white dark:bg-[#1a1a1e] rounded-2xl border border-[var(--color-bg-material-border)] overflow-hidden flex flex-col transition-all`}
       >
