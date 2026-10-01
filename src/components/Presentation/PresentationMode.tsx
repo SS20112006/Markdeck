@@ -21,6 +21,35 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({
 }) => {
   const currentSlide = slides[currentIndex]
 
+  // Native Fullscreen API Integration
+  useEffect(() => {
+    const enterFullscreen = async () => {
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen()
+        }
+      } catch {
+        // Silently handle if browser restricts automatic fullscreen
+      }
+    }
+
+    enterFullscreen()
+
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        onClose()
+      }
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {})
+      }
+    }
+  }, [onClose])
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -51,7 +80,10 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({
       <SlideView slide={currentSlide} isPresentationMode={true} />
 
       {/* Floating Bottom Control Bar */}
-      <nav aria-label="Controlos de Apresentação" className="absolute bottom-6 px-4 py-2 rounded-full hig-regular-material shadow-2xl flex items-center space-x-3 text-white">
+      <nav
+        aria-label="Controlos de Apresentação"
+        className="absolute bottom-6 px-4 py-2 rounded-full hig-regular-material shadow-2xl flex items-center space-x-3 text-white"
+      >
         <button
           type="button"
           onClick={onPrev}

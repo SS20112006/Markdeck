@@ -1,5 +1,14 @@
 import React, { useRef } from 'react'
-import { Play, ChevronLeft, ChevronRight, PartyPopper, FolderOpen, Download } from 'lucide-react'
+import {
+  Play,
+  ChevronLeft,
+  ChevronRight,
+  PartyPopper,
+  FolderOpen,
+  Download,
+  Printer,
+  RotateCcw,
+} from 'lucide-react'
 import confetti from 'canvas-confetti'
 
 interface ToolbarProps {
@@ -11,6 +20,7 @@ interface ToolbarProps {
   onStartPresentation: () => void
   onImportFile: (content: string, fileName: string) => void
   onExportFile: () => void
+  onResetDemo: () => void
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -22,6 +32,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onStartPresentation,
   onImportFile,
   onExportFile,
+  onResetDemo,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -50,8 +61,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     }
     reader.readAsText(file)
 
-    // Reset input so the same file can be selected again if needed
+    // Reset input so the same file can be selected again
     e.target.value = ''
+  }
+
+  const handlePrint = () => {
+    window.print()
   }
 
   return (
@@ -74,7 +89,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <h1 className="text-sm font-semibold leading-tight text-[var(--color-text-primary)]">
             Markdeck
           </h1>
-          <p className="text-[11px] text-[var(--color-text-secondary)] truncate max-w-[180px] sm:max-w-xs" title={fileName}>
+          <p
+            className="text-[11px] text-[var(--color-text-secondary)] truncate max-w-[150px] sm:max-w-xs"
+            title={fileName}
+          >
             {fileName}
           </p>
         </div>
@@ -107,17 +125,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       </div>
 
-      {/* File Operations & Action Buttons */}
-      <div className="flex items-center space-x-1 sm:space-x-2">
+      {/* Actions & Utilities */}
+      <div className="flex items-center space-x-1 sm:space-x-1.5">
         <button
           type="button"
           onClick={handleOpenClick}
           aria-label="Abrir ficheiro Markdown"
           title="Importar ficheiro .md do computador"
-          className="hig-touch-target px-3 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="hig-touch-target px-2.5 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
-          <FolderOpen className="w-4 h-4 mr-1.5 text-[var(--color-accent)]" />
-          <span className="hidden sm:inline">Abrir .md</span>
+          <FolderOpen className="w-4 h-4 sm:mr-1.5 text-[var(--color-accent)]" />
+          <span className="hidden sm:inline">Abrir</span>
         </button>
 
         <button
@@ -125,10 +143,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           onClick={onExportFile}
           aria-label="Guardar ficheiro Markdown"
           title="Descarregar ficheiro .md atual"
-          className="hig-touch-target px-3 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="hig-touch-target px-2.5 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
-          <Download className="w-4 h-4 mr-1.5 text-[var(--color-text-secondary)]" />
+          <Download className="w-4 h-4 sm:mr-1.5 text-[var(--color-text-secondary)]" />
           <span className="hidden sm:inline">Guardar</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handlePrint}
+          aria-label="Imprimir ou Exportar para PDF"
+          title="Imprimir ou Exportar para PDF (Cmd+P)"
+          className="hig-touch-target px-2.5 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+        >
+          <Printer className="w-4 h-4 sm:mr-1.5 text-[var(--color-text-secondary)]" />
+          <span className="hidden sm:inline">PDF</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onResetDemo}
+          aria-label="Repor apresentação de exemplo"
+          title="Repor slides de exemplo"
+          className="hig-touch-target p-2 rounded-lg text-xs text-[var(--color-text-secondary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
         </button>
 
         <button
@@ -136,16 +175,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           onClick={triggerCelebration}
           aria-label="Celebrar"
           title="Celebrar com confetti"
-          className="hig-touch-target px-2.5 rounded-lg text-xs font-medium text-[var(--color-text-primary)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="hig-touch-target p-2 rounded-lg text-xs text-amber-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
-          <PartyPopper className="w-4 h-4 text-amber-500" />
+          <PartyPopper className="w-4 h-4" />
         </button>
 
         <button
           type="button"
           onClick={onStartPresentation}
           aria-label="Iniciar Apresentação"
-          className="hig-touch-target px-4 rounded-lg text-xs font-semibold text-white bg-[var(--color-accent)] hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
+          className="hig-touch-target px-3.5 rounded-lg text-xs font-semibold text-white bg-[var(--color-accent)] hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
         >
           <Play className="w-3.5 h-3.5 mr-1.5 fill-current" />
           Apresentar

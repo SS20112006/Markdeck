@@ -67,3 +67,45 @@ h1, h2, h3, .font-display {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--color-bg-material-border);
 }
+
+/* Print & PDF Export Stylesheet (1 slide per page in landscape) */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  html, body, #root {
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-slide-page {
+    width: 100vw;
+    height: 100vh;
+    page-break-after: always;
+    break-after: page;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    box-sizing: border-box;
+    background: #ffffff;
+    color: #1d1d1f;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
