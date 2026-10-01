@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Markdeck Product Demo Stage</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 1080px;
+      height: 1350px;
+      background: #08080c;
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(0, 113, 227, 0.18) 0%, transparent 60%),
+        radial-gradient(circle at 80% 85%, rgba(147, 51, 234, 0.12) 0%, transparent 50%);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 40px;
+      position: relative;
+    }
+
+    /* Top Brand & Category Badge */
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      padding: 8px 18px;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+    }
+
+    .brand-pill svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .brand-pill .brand-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-pill .tagline {
+      font-size: 12px;
+      color: #86868b;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      padding-left: 10px;
+    }
+
+    /* Dynamic Narrative Titles */
+    .narrative-container {
+      width: 1000px;
+      height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .scene-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .scene-text.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .scene-title {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      background: linear-gradient(180deg, #ffffff 30%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .scene-sub {
+      font-size: 20px;
+      color: #94a3b8;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .scene-sub strong {
+      color: #0071e3;
+      font-weight: 600;
+    }
+
+    /* macOS Window Frame */
+    .mac-window {
+      width: 1000px;
+      height: 650px;
+      border-radius: 18px;
+      background: #141418;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 40px 90px -25px rgba(0, 0, 0, 0.9),
+        0 0 1px 1px rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin-top: 15px;
+      position: relative;
+    }
+
+    .mac-titlebar {
+      height: 40px;
+      background: rgba(28, 28, 34, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      position: relative;
+      user-select: none;
+    }
+
+    .traffic-lights {
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    .dot.red { background: #ff5f56; }
+    .dot.yellow { background: #ffbd2e; }
+    .dot.green { background: #27c93f; }
+
+    .window-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: #9ca3af;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .window-title .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #27c93f;
+    }
+
+    iframe {
+      width: 1000px;
+      height: 610px;
+      border: none;
+      flex: 1;
+      background: #0b0b0e;
+    }
+
+    /* Bottom Feature Highlights Bar */
+    .bottom-bar {
+      width: 1000px;
+      margin-top: 36px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      backdrop-filter: blur(16px);
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+
+    .feature-card.highlight {
+      border-color: rgba(0, 113, 227, 0.6);
+      background: rgba(0, 113, 227, 0.12);
+    }
+
+    .feature-card .feat-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-card .feat-sub {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* Outro Closing Card (Visible in Scene 6) */
+    .outro-overlay {
+      position: absolute;
+      inset: 0;
+      background: #08080c;
+      background-image: 
+        radial-gradient(circle at 50% 40%, rgba(0, 113, 227, 0.25) 0%, transparent 65%),
+        radial-gradient(circle at 50% 90%, rgba(147, 51, 234, 0.2) 0%, transparent 60%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+      padding: 60px;
+      text-align: center;
+    }
+
+    .outro-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .outro-logo {
+      width: 96px;
+      height: 96px;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 15px 35px rgba(0, 113, 227, 0.4));
+    }
+
+    .outro-title {
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .outro-tagline {
+      font-size: 26px;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-bottom: 40px;
+      letter-spacing: -0.015em;
+    }
+
+    .tech-pills {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .tech-pill {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, rgba(0, 113, 227, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+      border: 1px solid rgba(0, 113, 227, 0.5);
+      border-radius: 20px;
+      padding: 24px 44px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 20px 50px rgba(0, 113, 227, 0.2);
+    }
+
+    .cta-url {
+      font-size: 24px;
+      font-weight: 700;
+      color: #38bdf8;
+      font-family: ui-monospace, Menlo, monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-sub {
+      font-size: 15px;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Brand Pill -->
+  <div class="brand-pill">
+    <svg viewBox="0 0 40 40" fill="none">
+      <defs>
+        <linearGradient id="logo-g" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0071e3" />
+          <stop offset="100%" stop-color="#9333ea" />
+        </linearGradient>
+      </defs>
+      <rect width="40" height="32" y="3" rx="7" fill="url(#logo-g)" />
+      <rect x="7" y="9" width="10" height="2.5" rx="1.25" fill="#ffffff" fill-opacity="0.85" />
+      <rect x="7" y="15" width="26" height="3" rx="1.5" fill="#ffffff" />
+      <rect x="7" y="21" width="18" height="2.5" rx="1.25" fill="#ffffff" fill-opacity="0.7" />
+      <rect x="7" y="26" width="22" height="2.5" rx="1.25" fill="#ffffff" fill-opacity="0.55" />
+    </svg>
+    <span class="brand-name">Markdeck</span>
+    <span class="tagline">Presentations as Code</span>
+  </div>
+
+  <!-- Narrative Headlines Container (Scene-based) -->
+  <div class="narrative-container">
+    <!-- Scene 1 -->
+    <div id="scene-1" class="scene-text active">
+      <h1 class="scene-title">Stop wrestling with slide layouts.</h1>
+      <p class="scene-sub">Write <strong>Markdown</strong>. Get fluid presentations instantly in your browser.</p>
+    </div>
+
+    <!-- Scene 2 -->
+    <div id="scene-2" class="scene-text">
+      <h1 class="scene-title">Zero setup. Drag & drop any .md file.</h1>
+      <p class="scene-sub">Instant local file import straight from Finder. <strong>Zero cloud lock-in.</strong></p>
+    </div>
+
+    <!-- Scene 3 -->
+    <div id="scene-3" class="scene-text">
+      <h1 class="scene-title">Engineered for live technical talks.</h1>
+      <p class="scene-sub">Hit <strong>⌘ + Enter</strong> for distraction-free 60fps presentation mode.</p>
+    </div>
+
+    <!-- Scene 4 -->
+    <div id="scene-4" class="scene-text">
+      <h1 class="scene-title">Interactive stage reactions.</h1>
+      <p class="scene-sub">Hit <strong>'C'</strong> to celebrate milestone finales with vibrant confetti.</p>
+    </div>
+
+    <!-- Scene 5 -->
+    <div id="scene-5" class="scene-text">
+      <h1 class="scene-title">Complete presentation toolkit.</h1>
+      <p class="scene-sub">1-click <strong>PDF export (⌘+P)</strong>, speaker notes & auto-persistence.</p>
+    </div>
+  </div>
+
+  <!-- macOS Window Frame -->
+  <div class="mac-window">
+    <div class="mac-titlebar">
+      <div class="traffic-lights">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+      <div class="window-title">
+        <span class="status-dot"></span>
+        <span>Markdeck — Live Editor</span>
+      </div>
+    </div>
+    <iframe id="app-frame" src="http://localhost:5173"></iframe>
+  </div>
+
+  <!-- Bottom Feature Badges -->
+  <div class="bottom-bar">
+    <div id="card-split" class="feature-card highlight">
+      <div class="feat-title">⚡ Split-View Sync</div>
+      <div class="feat-sub">Live CodeMirror 6 markdown engine</div>
+    </div>
+    <div id="card-hig" class="feature-card">
+      <div class="feat-title"> Apple HIG Craft</div>
+      <div class="feat-sub">SF Pro optical tracking & dark mode</div>
+    </div>
+    <div id="card-export" class="feature-card">
+      <div class="feat-title">📄 Native PDF Export</div>
+      <div class="feat-sub">1-slide-per-page landscape print</div>
+    </div>
+  </div>
+
+  <!-- Outro Overlay (Scene 6) -->
+  <div id="outro" class="outro-overlay">
+    <svg class="outro-logo" viewBox="0 0 40 40" fill="none">
+      <defs>
+        <linearGradient id="outro-g" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0071e3" />
+          <stop offset="100%" stop-color="#9333ea" />
+        </linearGradient>
+      </defs>
+      <rect width="40" height="32" y="3" rx="7" fill="url(#outro-g)" />
+      <rect x="7" y="9" width="10" height="2.5" rx="1.25" fill="#ffffff" fill-opacity="0.85" />
+      <rect x="7" y="15" width="26" height="3" rx="1.5" fill="#ffffff" />
+      <rect x="7" y="21" width="18" height="2.5" rx="1.25" fill="#ffffff" fill-opacity="0.7" />
+      <rect x="7" y="26" width="22" height="2.5" rx="1.25" fill="#ffffff" fill-opacity="0.55" />
+      <path d="M16 35 L14 39 L26 39 L24 35 Z" fill="#0071e3" fill-opacity="0.8" />
+    </svg>
+    <h2 class="outro-title">Markdeck</h2>
+    <p class="outro-tagline">Presentations as Code. Fluid, instant & open-source.</p>
+
+    <div class="tech-pills">
+      <div class="tech-pill">React 19</div>
+      <div class="tech-pill">Tailwind v4</div>
+      <div class="tech-pill">TypeScript</div>
+      <div class="tech-pill">Framer Motion</div>
+      <div class="tech-pill">CodeMirror 6</div>
+    </div>
+
+    <div class="cta-box">
+      <span class="cta-url">ss20112006.github.io/Markdeck</span>
+      <span class="cta-sub">Free & Open Source on GitHub • Try it now in your browser</span>
+    </div>
+  </div>
+
+  <script>
+    // Helper function to switch scenes smoothly
+    window.setDemoScene = function(sceneNum) {
+      document.querySelectorAll('.scene-text').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById('scene-' + sceneNum);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Update bottom badges highlight
+      document.querySelectorAll('.feature-card').forEach(el => el.classList.remove('highlight'));
+      if (sceneNum === 1 || sceneNum === 2) {
+        document.getElementById('card-split')?.classList.add('highlight');
+      } else if (sceneNum === 3 || sceneNum === 4) {
+        document.getElementById('card-hig')?.classList.add('highlight');
+      } else if (sceneNum === 5) {
+        document.getElementById('card-export')?.classList.add('highlight');
+      }
+    };
+
+    window.showOutro = function() {
+      document.getElementById('outro').classList.add('active');
+    };
+  </script>
+
+</body>
+</html>

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Media & Recordings
+recordings/
+master_recordings/
+video_production/
+.playwright-mcp/
+*.webm
+debug_frames/
